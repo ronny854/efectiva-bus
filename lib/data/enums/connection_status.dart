@@ -1,0 +1,5 @@
+enum DeviceStatus {
+  UNAVAILABLE,
+  CONNECTED,
+  DISCONNECTED
+}

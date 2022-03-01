@@ -1,0 +1,5 @@
+enum DeviceAction {
+  CHARGE,
+  READ_ONLY,
+  READ_LAST_TRANSACTIONS
+}
