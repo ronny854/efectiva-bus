@@ -300,8 +300,8 @@ class _DashBoardScreen extends State<DashBoardScreen> {
           .setIsExecutingCharge(false);
       await _playSoundNoBalance();
     });
-    Provider.of<TravelProvider>(context, listen: false).setAddCard(true);
-    print('card lista');
+/*     Provider.of<TravelProvider>(context, listen: false).setAddCard(true);
+    print('card lista'); */
   }
 
   void getCardByCode(String code) {
