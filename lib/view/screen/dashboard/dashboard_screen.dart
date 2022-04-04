@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:typed_data';
 import 'package:activa_efectiva_bus/api/exceptions/network_exceptions.dart';
 import 'package:activa_efectiva_bus/data/enums/device_action.dart';
@@ -41,6 +42,7 @@ class _DashBoardScreen extends State<DashBoardScreen> {
   bool isDisconnecting = false;
   List<String> dataReader = [];
   String _dataReaderBuffer = '';
+  Timer _timer;
 
   final PageController _pageController = PageController();
   final GlobalKey<FancyBottomNavBarState> _bottomNavKey = GlobalKey();
@@ -221,7 +223,6 @@ class _DashBoardScreen extends State<DashBoardScreen> {
   void executeCharge(String code) async {
     Provider.of<TravelProvider>(context, listen: false)
         .setIsExecutingCharge(true);
-
     final travelInformation =
         Provider.of<PartnerProvider>(context, listen: false)
             .selectedPartnerInformation;
@@ -229,7 +230,7 @@ class _DashBoardScreen extends State<DashBoardScreen> {
         Provider.of<RouteProvider>(context, listen: false).selectedRoute;
     final driverInformation =
         Provider.of<DriverProvider>(context, listen: false).driverInformation;
-
+    //Provider.of<TravelProvider>(context, listen: false).setAddCard(true);
     if (routeInformation == null || routeInformation.id == "") {
       Provider.of<TravelProvider>(context, listen: false)
           .showCardInformation(true);
@@ -299,6 +300,8 @@ class _DashBoardScreen extends State<DashBoardScreen> {
           .setIsExecutingCharge(false);
       await _playSoundNoBalance();
     });
+    Provider.of<TravelProvider>(context, listen: false).setAddCard(true);
+    print('card lista');
   }
 
   void getCardByCode(String code) {

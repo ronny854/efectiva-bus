@@ -6,6 +6,7 @@ import 'package:activa_efectiva_bus/provider/device_provider.dart';
 import 'package:activa_efectiva_bus/provider/partner_provider.dart';
 import 'package:activa_efectiva_bus/provider/travel_provider.dart';
 import 'package:activa_efectiva_bus/utill/utils.dart';
+import 'package:activa_efectiva_bus/view/basewidget/card_information.dart';
 import 'package:activa_efectiva_bus/view/screen/bus_travel/widget/disconnected_information.dart';
 import 'package:activa_efectiva_bus/view/screen/bus_travel/widget/expanded_list_animation.dart';
 import 'package:activa_efectiva_bus/view/screen/bus_travel/widget/scrollbar.dart';
@@ -30,6 +31,7 @@ import 'package:provider/provider.dart';
 import 'dart:async';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:responsive_sizer/responsive_sizer.dart' as responsive;
 
 class BusTravelScreen extends StatefulWidget {
   @override
@@ -42,7 +44,7 @@ class _BusTravelScreenState extends State<BusTravelScreen> {
   bool isStrechedDropDown = false;
   int groupValue;
   String title = 'Seleccione una tarifa preconfigurada';
-
+  List<Widget> cardLista = [];
   @override
   void initState() {
     super.initState();
@@ -219,293 +221,35 @@ class _BusTravelScreenState extends State<BusTravelScreen> {
 
           // Card information
           Consumer<TravelProvider>(builder: (context, travel, child) {
+            if (travel.addCard) {
+              addCard();
+            } else {
+              print('no agrego');
+            }
+
             if (travel.showCard) {
+              //cardLista.insert(0, cardInformationItem());
+              print('vector==> $cardLista');
               print("Displaying card...");
               //poner ubicacion Aqui
-
+              //if (cardLista.isNotEmpty) {
               startTimer();
+              //}
             }
+
+            //return cardInfotmation(travel, context);
+            //cardLista.insert(0, cardInfotmation(travel, context));
 
             return Column(
               children: [
-                Visibility(
-                    visible: travel.showCard,
-                    child:
-                        Consumer<CardProvider>(builder: (context, card, child) {
-                      if (card.successReader) {
-                        //resetRatesValues();
-                        return Container(
-                          margin: EdgeInsets.only(
-                            bottom: Dimensions.MARGIN_SIZE_EXTRA_LARGE,
-                            left: Dimensions.MARGIN_SIZE_DEFAULT,
-                            right: Dimensions.MARGIN_SIZE_DEFAULT,
-                          ),
-                          width: MediaQuery.of(context).size.width,
-                          height: 200,
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
-                              color: Utils.getCardColor(card.chargeInformation),
-                              boxShadow: [
-                                BoxShadow(
-                                    color: Colors.grey.withOpacity(0.3),
-                                    spreadRadius: 1,
-                                    blurRadius: 5)
-                              ]),
-                          child: Stack(children: [
-                            Row(
-                                crossAxisAlignment: CrossAxisAlignment.stretch,
-                                children: [
-                                  Expanded(
-                                    flex: 4,
-                                    child: Container(
-                                        padding: EdgeInsets.all(
-                                            Dimensions.PADDING_SIZE_SMALL),
-                                        decoration: BoxDecoration(
-                                          color:
-                                              ColorResources.getIconBg(context),
-                                          borderRadius: BorderRadius.only(
-                                              topLeft: Radius.circular(10),
-                                              bottomLeft: Radius.circular(10)),
-                                        ),
-                                        child: FadeInImage.assetNetwork(
-                                          image: card.chargeInformation !=
-                                                      null &&
-                                                  card.chargeInformation
-                                                      .isPreferencial
-                                              ? card.chargeInformation
-                                                  .metadata["photoUrl"]
-                                              : "https://dummyimage.com/300x300/E8E8E8/ffffff.jpg&text=A",
-                                          placeholder:
-                                              cupertinoActivityIndicator,
-                                          fit: BoxFit.cover,
-                                          height: 100,
-                                        )),
-                                  ),
-                                  Expanded(
-                                    flex: 6,
-                                    child: Padding(
-                                      padding: EdgeInsets.all(
-                                          Dimensions.PADDING_SIZE_SMALL),
-                                      child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          SizedBox(
-                                              height: Dimensions
-                                                  .PADDING_SIZE_DEFAULT),
-                                          // Card user names
-                                          Row(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Icon(Icons.person_pin_outlined,
-                                                    color: ColorResources
-                                                        .getPrimaryInversed(
-                                                            context),
-                                                    size: 26),
-                                                SizedBox(
-                                                    width: Dimensions
-                                                        .PADDING_SIZE_SMALL),
-                                                Expanded(
-                                                  child: Text(
-                                                    card.chargeInformation !=
-                                                                null &&
-                                                            card.chargeInformation
-                                                                .isPreferencial
-                                                        ? card.chargeInformation
-                                                                    .metadata[
-                                                                "names"] +
-                                                            " " +
-                                                            card.chargeInformation
-                                                                    .metadata[
-                                                                "lastNames"]
-                                                        : "",
-                                                    style: robotoRegular.copyWith(
-                                                        fontSize: Dimensions
-                                                            .FONT_SIZE_EXTRA_LARGE,
-                                                        color: ColorResources
-                                                            .getPrimaryInversed(
-                                                                context)),
-                                                    maxLines: 2,
-                                                    overflow:
-                                                        TextOverflow.ellipsis,
-                                                  ),
-                                                ),
-                                              ]),
-                                          SizedBox(
-                                              height: Dimensions
-                                                  .PADDING_SIZE_SMALL),
-                                          // Card code
-                                          Row(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Icon(Icons.qr_code,
-                                                    color: ColorResources
-                                                        .getPrimaryInversed(
-                                                            context),
-                                                    size: 26),
-                                                SizedBox(
-                                                    width: Dimensions
-                                                        .PADDING_SIZE_SMALL),
-                                                Expanded(
-                                                  child: Text(
-                                                    Utils.maskCode(card
-                                                        .chargeInformation
-                                                        .code),
-                                                    style: robotoBold.copyWith(
-                                                        fontSize: Dimensions
-                                                            .FONT_SIZE_EXTRA_LARGE,
-                                                        color: ColorResources
-                                                            .getPrimaryInversed(
-                                                                context)),
-                                                  ),
-                                                ),
-                                              ]),
-                                          SizedBox(
-                                              height: Dimensions
-                                                  .PADDING_SIZE_SMALL),
-/*                                           Expanded(
-                                              child: Text(
-                                            card.currentAddress,
-                                            style: robotoRegular.copyWith(
-                                                fontSize: Dimensions
-                                                    .FONT_SIZE_EXTRA_LARGE,
-                                                color: ColorResources
-                                                    .getPrimaryInversed(
-                                                        context)),
-                                            maxLines: 2,
-                                            overflow: TextOverflow.ellipsis,
-                                          )), */
-                                          SizedBox(
-                                              height: Dimensions
-                                                  .PADDING_SIZE_SMALL),
-                                          // Card balance
-                                          Row(children: [
-                                            Icon(Icons.attach_money,
-                                                color: Colors.orange, size: 32),
-                                            Expanded(
-                                              child: Text(
-                                                Utils.getBalanceText(
-                                                    card.chargeInformation),
-                                                maxLines: 2,
-                                                overflow: TextOverflow.ellipsis,
-                                                style: robotoSuperBold.copyWith(
-                                                    color: Colors.orange,
-                                                    fontSize: Utils
-                                                        .getBalanceTextFontSize(
-                                                            card.chargeInformation)),
-                                              ),
-                                            ),
-                                          ]),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ]),
-                            Positioned(
-                              top: 0,
-                              right: 0,
-                              child: Container(
-                                width: 150,
-                                height: 25,
-                                alignment: Alignment.center,
-                                decoration: BoxDecoration(
-                                  color: ColorResources.getYellow(context),
-                                  borderRadius: BorderRadius.only(
-                                      topRight: Radius.circular(10),
-                                      bottomLeft: Radius.circular(10)),
-                                ),
-                                child: Text(
-                                  card.chargeInformation != null &&
-                                          card.chargeInformation.isPreferencial
-                                      ? card.chargeInformation
-                                          .metadata["preferenceType"]
-                                      : "NO PREFERENCIAL",
-                                  style: robotoBold.copyWith(
-                                      color: ColorResources.WHITE,
-                                      fontSize: Dimensions.FONT_SIZE_DEFAULT),
-                                ),
-                              ),
-                            )
-                          ]),
-                        );
-                      }
-
-                      return Container(
-                        margin: EdgeInsets.only(
-                          bottom: Dimensions.MARGIN_SIZE_EXTRA_LARGE,
-                          left: Dimensions.MARGIN_SIZE_DEFAULT,
-                          right: Dimensions.MARGIN_SIZE_DEFAULT,
-                        ),
-                        width: MediaQuery.of(context).size.width,
-                        height: 150,
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            color: ColorResources.COLOR_ALIZARIN,
-                            boxShadow: [
-                              BoxShadow(
-                                  color: Colors.grey.withOpacity(0.3),
-                                  spreadRadius: 1,
-                                  blurRadius: 5)
-                            ]),
-                        child: Stack(children: [
-                          Row(
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children: [
-                                Expanded(
-                                  child: Padding(
-                                    padding: EdgeInsets.all(
-                                        Dimensions.PADDING_SIZE_SMALL),
-                                    child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        SizedBox(
-                                            height: Dimensions
-                                                .PADDING_SIZE_DEFAULT),
-                                        Row(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Icon(Icons.error_outline,
-                                                  color: ColorResources
-                                                      .getPrimaryInversed(
-                                                          context),
-                                                  size: 32),
-                                              SizedBox(
-                                                  width: Dimensions
-                                                      .PADDING_SIZE_SMALL),
-                                              Expanded(
-                                                child: Text(
-                                                  card.validationErrorReader,
-                                                  style: robotoRegular.copyWith(
-                                                      fontSize: Dimensions
-                                                          .FONT_SIZE_EXTRA_LARGE,
-                                                      color: ColorResources
-                                                          .getPrimaryInversed(
-                                                              context)),
-                                                  maxLines: 2,
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                ),
-                                              ),
-                                            ]),
-                                        SizedBox(
-                                            height:
-                                                Dimensions.PADDING_SIZE_SMALL),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ]),
-                        ]),
-                      );
-                    })),
+                Container(
+                    //visible: travel.showCard,
+                    //visible: cardLista.isEmpty ? false : true,
+                    child: cardLista.isNotEmpty
+                        ? listCardInformation()
+                        : Container()
+                    //: buildChargeRates(),
+                    ),
                 Visibility(
                   visible: travel.isExecutingCharge,
                   child: Column(children: [
@@ -524,6 +268,211 @@ class _BusTravelScreenState extends State<BusTravelScreen> {
         ]),
       ),
     );
+  }
+
+  Widget cardInformationItem() {
+    return Consumer<CardProvider>(builder: (context, card, child) {
+      if (card.successReader) {
+        //resetRatesValues();
+        return Container(
+          margin: EdgeInsets.only(
+            bottom: Dimensions.MARGIN_SIZE_EXTRA_LARGE,
+            left: Dimensions.MARGIN_SIZE_DEFAULT,
+            right: Dimensions.MARGIN_SIZE_DEFAULT,
+          ),
+          width: MediaQuery.of(context).size.width,
+          height: 200,
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              color: Utils.getCardColor(card.chargeInformation),
+              boxShadow: [
+                BoxShadow(
+                    color: Colors.grey.withOpacity(0.3),
+                    spreadRadius: 1,
+                    blurRadius: 5)
+              ]),
+          child: Stack(children: [
+            Row(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+              Expanded(
+                flex: 4,
+                child: Container(
+                    padding: EdgeInsets.all(Dimensions.PADDING_SIZE_SMALL),
+                    decoration: BoxDecoration(
+                      color: ColorResources.getIconBg(context),
+                      borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(10),
+                          bottomLeft: Radius.circular(10)),
+                    ),
+                    child: FadeInImage.assetNetwork(
+                      image: card.chargeInformation != null &&
+                              card.chargeInformation.isPreferencial
+                          ? card.chargeInformation.metadata["photoUrl"]
+                          : "https://dummyimage.com/300x300/E8E8E8/ffffff.jpg&text=A",
+                      placeholder: cupertinoActivityIndicator,
+                      fit: BoxFit.cover,
+                      height: 100,
+                    )),
+              ),
+              Expanded(
+                flex: 6,
+                child: Padding(
+                  padding: EdgeInsets.all(Dimensions.PADDING_SIZE_SMALL),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(height: Dimensions.PADDING_SIZE_DEFAULT),
+                      // Card user names
+                      Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Icon(Icons.person_pin_outlined,
+                                color:
+                                    ColorResources.getPrimaryInversed(context),
+                                size: 26),
+                            SizedBox(width: Dimensions.PADDING_SIZE_SMALL),
+                            Expanded(
+                              child: Text(
+                                card.chargeInformation != null &&
+                                        card.chargeInformation.isPreferencial
+                                    ? card.chargeInformation.metadata["names"] +
+                                        " " +
+                                        card.chargeInformation
+                                            .metadata["lastNames"]
+                                    : "",
+                                style: robotoRegular.copyWith(
+                                    fontSize: Dimensions.FONT_SIZE_EXTRA_LARGE,
+                                    color: ColorResources.getPrimaryInversed(
+                                        context)),
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ]),
+                      SizedBox(height: Dimensions.PADDING_SIZE_SMALL),
+                      // Card code
+                      Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Icon(Icons.qr_code,
+                                color:
+                                    ColorResources.getPrimaryInversed(context),
+                                size: 26),
+                            SizedBox(width: Dimensions.PADDING_SIZE_SMALL),
+                            Expanded(
+                              child: Text(
+                                Utils.maskCode(card.chargeInformation.code),
+                                style: robotoBold.copyWith(
+                                    fontSize: Dimensions.FONT_SIZE_EXTRA_LARGE,
+                                    color: ColorResources.getPrimaryInversed(
+                                        context)),
+                              ),
+                            ),
+                          ]),
+                      SizedBox(height: Dimensions.PADDING_SIZE_SMALL),
+                      // Card balance
+                      Row(children: [
+                        Icon(Icons.attach_money,
+                            color: Colors.orange, size: 32),
+                        Expanded(
+                          child: Text(
+                            Utils.getBalanceText(card.chargeInformation),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: robotoSuperBold.copyWith(
+                                color: Colors.orange,
+                                fontSize: Utils.getBalanceTextFontSize(
+                                    card.chargeInformation)),
+                          ),
+                        ),
+                      ]),
+                    ],
+                  ),
+                ),
+              ),
+            ]),
+            Positioned(
+              top: 0,
+              right: 0,
+              child: Container(
+                width: 150,
+                height: 25,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  color: ColorResources.getYellow(context),
+                  borderRadius: BorderRadius.only(
+                      topRight: Radius.circular(10),
+                      bottomLeft: Radius.circular(10)),
+                ),
+                child: Text(
+                  card.chargeInformation != null &&
+                          card.chargeInformation.isPreferencial
+                      ? card.chargeInformation.metadata["preferenceType"]
+                      : "NO PREFERENCIAL",
+                  style: robotoBold.copyWith(
+                      color: ColorResources.WHITE,
+                      fontSize: Dimensions.FONT_SIZE_DEFAULT),
+                ),
+              ),
+            )
+          ]),
+        );
+      }
+      return Container(
+        margin: EdgeInsets.only(
+          bottom: Dimensions.MARGIN_SIZE_EXTRA_LARGE,
+          left: Dimensions.MARGIN_SIZE_DEFAULT,
+          right: Dimensions.MARGIN_SIZE_DEFAULT,
+        ),
+        width: MediaQuery.of(context).size.width,
+        height: 150,
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            color: ColorResources.COLOR_ALIZARIN,
+            boxShadow: [
+              BoxShadow(
+                  color: Colors.grey.withOpacity(0.3),
+                  spreadRadius: 1,
+                  blurRadius: 5)
+            ]),
+        child: Stack(children: [
+          Row(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+            Expanded(
+              child: Padding(
+                padding: EdgeInsets.all(Dimensions.PADDING_SIZE_SMALL),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(height: Dimensions.PADDING_SIZE_DEFAULT),
+                    Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Icon(Icons.error_outline,
+                              color: ColorResources.getPrimaryInversed(context),
+                              size: 32),
+                          SizedBox(width: Dimensions.PADDING_SIZE_SMALL),
+                          Expanded(
+                            child: Text(
+                              card.validationErrorReader,
+                              style: robotoRegular.copyWith(
+                                  fontSize: Dimensions.FONT_SIZE_EXTRA_LARGE,
+                                  color: ColorResources.getPrimaryInversed(
+                                      context)),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ]),
+                    SizedBox(height: Dimensions.PADDING_SIZE_SMALL),
+                  ],
+                ),
+              ),
+            ),
+          ]),
+        ]),
+      );
+    });
   }
 
   Widget buildOptionsWhenConnected() {
@@ -583,76 +532,193 @@ class _BusTravelScreenState extends State<BusTravelScreen> {
     // });
   }
 
-  Widget buildChargeRates() {
-    return Padding(
-      padding: EdgeInsets.all(Dimensions.PADDING_SIZE_SMALL),
-      child: Column(
+  //todo: nuevo metodo
+/*   Widget buildChargeRatesCard() {
+    return Column(
+      children: [
+        SizedBox(
+          height: Dimensions.PADDING_SIZE_DEFAULT,
+        ),
+        Consumer<PartnerProvider>(builder: (context, partner, child) {
+          if (partner.selectedPartnerInformation != null &&
+              partner.selectedPartnerInformation.bus.operator.rates != null &&
+              partner.selectedPartnerInformation.bus.operator.rates.length >
+                  0) {
+            return buidRateCardList(
+                partner.selectedPartnerInformation.bus.operator.rates);
+          }
+          return SizedBox(
+            height: 0,
+          );
+        }),
+      ],
+    );
+  } */
+  Widget listCardInformation() {
+    return Container(
+      height: 100.h,
+      width: 100.w,
+      child: ListView(
         children: [
-          SizedBox(height: Dimensions.PADDING_SIZE_EXTRA_SMALL),
-          Container(
-            width: MediaQuery.of(context).size.width,
-            child: TextField(
-              controller: _initialBalance,
-              keyboardType: TextInputType.number,
-              onChanged: (text) {
-                Provider.of<CardProvider>(context, listen: false)
-                    .setAmountToCharge(text);
-                Provider.of<CardProvider>(context, listen: false)
-                    .setSelectedRateAmount(0);
-                setState(() {
-                  groupValue = null;
-                  title = "Seleccione una tarifa preconfigurada";
-                });
-              },
-              decoration: InputDecoration(
-                suffixIcon: IconButton(
-                  onPressed: () {
-                    Provider.of<CardProvider>(context, listen: false)
-                        .setAmountToCharge("");
-                    _initialBalance.clear();
-                  },
-                  icon: Icon(
-                    Icons.cancel_outlined,
-                    color: Colors.black,
-                  ),
-                ),
-                contentPadding:
-                    EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(7.0),
-                ),
-                hintText: "Ingrese el valor a cobrar",
-                labelText: "Valor a cobrar",
-                enabledBorder: const OutlineInputBorder(
-                  // width: 0.0 produces a thin "hairline" border
-                  borderSide: const BorderSide(
-                    color: Colors.black,
-                  ),
-                ),
-              ),
-            ),
-          ),
-          SizedBox(
-            height: Dimensions.PADDING_SIZE_DEFAULT,
-          ),
-          Consumer<PartnerProvider>(builder: (context, partner, child) {
-            if (partner.selectedPartnerInformation != null &&
-                partner.selectedPartnerInformation.bus.operator.rates != null &&
-                partner.selectedPartnerInformation.bus.operator.rates.length >
-                    0) {
-              return buildOptionsRatesList(
-                  partner.selectedPartnerInformation.bus.operator.rates);
-            }
-            return SizedBox(
-              height: 0,
-            );
-          }),
+          for (var i = 0; i < cardLista.length; i++) cardLista[i],
         ],
       ),
     );
   }
 
-  Widget buildOptionsRatesList(List<Rates> rates) {
+  Widget buildRateOptionCardList(List<Rates> rates) {
+    //print(Utils.calculateAmount(rates.elementAt(0).price));
+    return Container(
+      height: 10.h,
+      width: 100.w,
+      child: ListView(
+        scrollDirection: Axis.horizontal,
+        children: [
+          for (var i = 0; i < rates.length; i++)
+            Container(
+              padding: EdgeInsets.only(right: 2.w),
+              child: GestureDetector(
+                onTap: () {
+                  print(Utils.calculateAmount(rates.elementAt(i).price));
+                  Provider.of<CardProvider>(context, listen: false)
+                      .setAmountToCharge("");
+                  Provider.of<CardProvider>(context, listen: false)
+                      .setSelectedRateAmount(rates.elementAt(i).price);
+                },
+                child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 3.w),
+                  //padding: EdgeInsets.only(left: 3.w, bottom: 48.h),
+                  //width: 30.w,
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.all(Radius.circular(20)),
+                      color: Colors.white,
+                      boxShadow: [
+                        BoxShadow(
+                            color: Colors.grey.withOpacity(0.2),
+                            spreadRadius: 3,
+                            blurRadius: 4,
+                            offset: Offset(0, 1))
+                      ]),
+                  //width: MediaQuery.of(context).size.width * .5,
+
+                  child: Container(
+                    //padding: EdgeInsets.symmetric(horizontal: 5.w),
+                    child: Column(
+                      children: [
+                        SizedBox(
+                          height: 1.h,
+                        ),
+                        Text(
+                          rates.elementAt(i).description,
+                          style: responsive.Device.screenType ==
+                                  responsive.ScreenType.tablet
+                              ? TextStyle(fontSize: 13.sp, letterSpacing: 3.sp)
+                              : TextStyle(fontSize: 18.sp, letterSpacing: 3.sp),
+                        ),
+                        SizedBox(
+                            height: responsive.Device.screenType ==
+                                    responsive.ScreenType.tablet
+                                ? 0.2.h
+                                : 0.1.h),
+                        Text(
+                          Utils.calculateAmount(rates.elementAt(i).price),
+                          style: TextStyle(color: Colors.blue, fontSize: 25.sp),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  // todo: remplazar este metodo por el de las targetas
+  Widget buildChargeRates() {
+    return Consumer<TravelProvider>(
+      builder: (context, travel, child) {
+        return Visibility(
+          visible: (travel.isExecutingCharge == false &&
+                  travel.showCard == false &&
+                  cardLista.isEmpty)
+              ? true
+              : false,
+          child: Padding(
+            padding: EdgeInsets.all(Dimensions.PADDING_SIZE_SMALL),
+            child: Column(
+              children: [
+                SizedBox(height: Dimensions.PADDING_SIZE_EXTRA_SMALL),
+                Container(
+                  width: MediaQuery.of(context).size.width,
+                  child: TextField(
+                    controller: _initialBalance,
+                    keyboardType: TextInputType.number,
+                    onChanged: (text) {
+                      Provider.of<CardProvider>(context, listen: false)
+                          .setAmountToCharge(text);
+                      Provider.of<CardProvider>(context, listen: false)
+                          .setSelectedRateAmount(0);
+                      setState(() {
+                        groupValue = null;
+                        title = "Seleccione una tarifa preconfigurada";
+                      });
+                    },
+                    decoration: InputDecoration(
+                      suffixIcon: IconButton(
+                        onPressed: () {
+                          Provider.of<CardProvider>(context, listen: false)
+                              .setAmountToCharge("");
+                          _initialBalance.clear();
+                        },
+                        icon: Icon(
+                          Icons.cancel_outlined,
+                          color: Colors.black,
+                        ),
+                      ),
+                      contentPadding:
+                          EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(7.0),
+                      ),
+                      hintText: "Ingrese el valor a cobrar",
+                      labelText: "Valor a cobrar",
+                      enabledBorder: const OutlineInputBorder(
+                        // width: 0.0 produces a thin "hairline" border
+                        borderSide: const BorderSide(
+                          color: Colors.black,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  height: Dimensions.PADDING_SIZE_DEFAULT,
+                ),
+                Consumer<PartnerProvider>(builder: (context, partner, child) {
+                  if (partner.selectedPartnerInformation != null &&
+                      partner.selectedPartnerInformation.bus.operator.rates !=
+                          null &&
+                      partner.selectedPartnerInformation.bus.operator.rates
+                              .length >
+                          0) {
+                    return buildRateOptionCardList(
+                        partner.selectedPartnerInformation.bus.operator.rates);
+                  }
+                  return SizedBox(
+                    height: 0,
+                  );
+                }),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  /* Widget buildOptionsRatesList(List<Rates> rates) {
     return Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Expanded(
           child: Container(
@@ -760,6 +826,13 @@ class _BusTravelScreenState extends State<BusTravelScreen> {
         ),
       ))
     ]);
+  } */
+  void addCard() async {
+    _timer = await Timer(Duration(milliseconds: 500), () {
+      print('agrego correctamente');
+      cardLista.insert(0, cardInformationItem());
+      Provider.of<TravelProvider>(context, listen: false).setAddCard(false);
+    });
   }
 
   void startTimer() {
@@ -767,13 +840,25 @@ class _BusTravelScreenState extends State<BusTravelScreen> {
       _timer.cancel();
     }
     _timer = Timer(
-      const Duration(seconds: 8),
+      const Duration(seconds: 5),
       () {
-        Provider.of<TravelProvider>(context, listen: false)
-            .showCardInformation(false);
+        setState(() {
+          cardLista.removeLast();
+        });
+
+/*         Provider.of<TravelProvider>(context, listen: false)
+            .showCardInformation(false); */
         if (_timer.isActive) {
           print("Hidding card...");
           _timer.cancel();
+        }
+        if (cardLista.isNotEmpty) {
+          startTimer();
+        } else {
+          print('no hay mas targetas');
+          _timer.cancel();
+          Provider.of<TravelProvider>(context, listen: false)
+              .showCardInformation(false);
         }
       },
     );

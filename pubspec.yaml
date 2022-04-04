@@ -50,6 +50,7 @@ dependencies:
   loading_gifs: ^0.3.0
   numeric_keyboard: ^1.1.0
   provider: ^5.0.0
+  responsive_sizer: ^3.0.5+1
   shared_preferences: ^2.0.5
   shimmer: ^2.0.0-nullsafety.0
   soundpool: ^2.2.0

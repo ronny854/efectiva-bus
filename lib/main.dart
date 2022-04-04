@@ -24,6 +24,7 @@ import 'package:provider/provider.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:hive/hive.dart';
+import 'package:responsive_sizer/responsive_sizer.dart';
 import 'di_container.dart' as di;
 import 'localization/app_localization.dart';
 import 'provider/banner_provider.dart';
@@ -57,7 +58,6 @@ Future<void> main() async {
   Hive.registerAdapter(DriversAdapter());
   Hive.registerAdapter(DeviceAdapter());
   Hive.registerAdapter(RouteModelAdapter());
-
 
   await Hive.openBox<PartnerInformationResponse>('partner_information');
   await Hive.openBox<RouteModel>('routes');
@@ -108,7 +108,9 @@ class MyApp extends StatelessWidget {
         GlobalCupertinoLocalizations.delegate,
       ],
       supportedLocales: _locals,
-      home: SplashScreen(),
+      home: ResponsiveSizer(builder: (context, orientation, screenType) {
+        return SplashScreen();
+      }),
       builder: EasyLoading.init(),
     );
   }
